@@ -1,0 +1,3 @@
+[submodule "pix-color_pixel-cnn"]
+	path = pix-color_pixel-cnn
+	url = https://github.com/sjooyoo/pix-color_pixel-cnn.git
