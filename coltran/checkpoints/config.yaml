@@ -1,0 +1,64 @@
+batch_size: 7
+dataset: imagenet
+downsample: true
+downsample_res: 64
+encoder_loss_factor: 0.01
+eval_batch_size: 16
+eval_checkpoint_wait_secs: -1
+eval_num_examples: 20000
+loss_factor: 0.99
+max_train_steps: 450000
+model:
+  decoder:
+    cond_att_act: identity
+    cond_att_init: glorot_uniform
+    cond_att_k: true
+    cond_att_q: true
+    cond_att_scale: true
+    cond_att_v: true
+    cond_ln: true
+    cond_ln_act: identity
+    cond_ln_init: glorot_uniform
+    cond_ln_seq: sc
+    cond_ln_sp_ave: learnable
+    cond_mlp: affine
+    cond_mlp_act: identity
+    dropout: 0.0
+    ff_size: 512
+    hidden_size: 512
+    num_heads: 4
+    num_inner_layers: 2
+    num_outer_layers: 2
+    resolution:
+    - 64
+    - 64
+    skip: true
+  encoder:
+    dropout: 0.0
+    ff_size: 512
+    hidden_size: 512
+    num_encoder_layers: 4
+    num_heads: 4
+  hidden_size: 512
+  name: coltran_core
+  resolution:
+  - 64
+  - 64
+  stage: encoder_decoder
+num_epochs: -1
+optimizer:
+  learning_rate: 0.0003
+  type: rmsprop
+polyak_decay: 0.999
+resolution:
+- 256
+- 256
+sample:
+  batch_size: 1
+  gen_file: gen0
+  log_dir: ''
+  mode: sample
+  num_outputs: 1
+  num_samples: 1
+  skip_batches: 0
+save_checkpoint_secs: 900

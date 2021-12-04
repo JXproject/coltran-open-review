@@ -192,7 +192,6 @@ def train(logdir):
     read_config = None
     if input_context is not None:
       read_config = tfds.ReadConfig(input_context=input_context)
-
     dataset = datasets.get_dataset(
         name=FLAGS.dataset,
         config=config,
