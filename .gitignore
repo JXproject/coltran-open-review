@@ -133,3 +133,4 @@ dmypy.json
 
 # Coltran pretrained weight folder
 coltran/coltran/
+coltran/result*

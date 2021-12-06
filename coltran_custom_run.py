@@ -23,10 +23,8 @@ from jx_lib import create_all_folders
 from icecream import ic
 
 # %% USER PARAMS:
-TAG = "-potato3"
-# TAG = ""
-
-
+# TAG = "-potato3"
+TAG = ""
 
 # %% Definitions:
 from enum import Enum
@@ -66,15 +64,15 @@ CONFIG = {
 
 ### INIT [USER INPUT]:
 RUN_STEPS = [
-    COLORTRAN_STEPS.INIT,
-    COLORTRAN_STEPS.COLORIZER,
-    COLORTRAN_STEPS.COPLOR_UPSAMPLER,
+    # COLORTRAN_STEPS.INIT,
+    # COLORTRAN_STEPS.COLORIZER,
+    # COLORTRAN_STEPS.COPLOR_UPSAMPLER,
     COLORTRAN_STEPS.SPATIAL_UPSAMPLER,
 ]
 
 # grab 5k samples: 100 x 50 = 5k:
-MASTER_DIRECTORY = 'coltran/potatoes_images'
-# MASTER_DIRECTORY = '/home/jx/tensorflow_datasets/imagenet2012/val/'
+# MASTER_DIRECTORY = 'coltran/potatoes_images'
+MASTER_DIRECTORY = '/home/jx/tensorflow_datasets/imagenet2012/val/'
 validation_dir = [os.path.join(MASTER_DIRECTORY,dir) for dir in tf.io.gfile.listdir(MASTER_DIRECTORY)]
 CONFIG[COLORTRAN_STEPS.INIT]["image_directory"] = validation_dir[0:100]
 
