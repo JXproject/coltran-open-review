@@ -21,11 +21,16 @@ LUT = {
         "ref": 'coltran/result/imagenet/color',
         "out": 'coltran/result/stage_3',
         "batch": 100,
-    }
+    },
+    "batch": {
+        "ref": 'coltran/result-batch/imagenet/color',
+        "out": 'coltran/result-batch/stage_3',
+        "batch": 1,
+    },
 }
 
 # [USER] selection:
-TAG = "ColTran"
+TAG = "batch"
 
 # def:
 PATH_ORIGINAL = LUT[TAG]["ref"]
@@ -40,14 +45,8 @@ def load_and_preprocess_image(directory_1, directory_2, batch_size=20):
 
         image_1 = tf.image.decode_image(image_str_1, channels=3)
         image_2 = tf.image.decode_image(image_str_2, channels=3)
-
-        image_1_p = tf.cast(image_1, tf.float32)
-        image_1_p = tf.keras.applications.mobilenet.preprocess_input(image_1_p)
         
-        image_2_p = tf.cast(image_2, tf.float32)
-        image_2_p = tf.keras.applications.mobilenet.preprocess_input(image_2_p)
-
-        return image_1_p, image_2_p
+        return image_1, image_2
 
     child_files = tf.io.gfile.listdir(directory_1)
     pair_files = ([os.path.join(directory_1, file) for file in child_files], [os.path.join(directory_2, file) for file in child_files])
@@ -62,6 +61,7 @@ dataset, num_files = load_and_preprocess_image(directory_1=PATH_ORIGINAL, direct
 dataset_itr = iter(dataset)
 resize_and_rescale = tf.keras.Sequential([
     tf.keras.layers.Resizing(299, 299),
+    tf.keras.layers.Rescaling(1./255)
 ])
 
 model.summary()
@@ -76,9 +76,19 @@ activation_2 = []
 for i in range(num_epochs):
     print("> [epoch] {}/{}".format(i, num_epochs))
     img1_batch, img2_batch = next(dataset_itr)
-    img1_batch = resize_and_rescale(img1_batch)
-    img2_batch = resize_and_rescale(img2_batch)
+    ic(np.max(img1_batch))
+    image_1_p = tf.cast(img1_batch, tf.float32)
+    image_2_p = tf.cast(img2_batch, tf.float32)
+    
+    ic(np.max(img1_batch))
+    image_1_p = tf.keras.applications.mobilenet.preprocess_input(image_1_p)
+    image_2_p = tf.keras.applications.mobilenet.preprocess_input(image_2_p)
+    
+    ic(np.max(img1_batch))
+    img1_batch = resize_and_rescale(image_1_p)
+    img2_batch = resize_and_rescale(image_2_p)
 
+    ic(np.max(img1_batch))
     act_1 = model.predict(img1_batch)
     act_2 = model.predict(img2_batch)
 
