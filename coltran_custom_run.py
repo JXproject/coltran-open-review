@@ -106,7 +106,6 @@ def gen_grayscale_dataset_from_images(img_dir, batch_size, mode='colorize', conv
         all_child_files.extend(child_files)
         all_files.extend(files)
 
-    files = tf.convert_to_tensor(all_files, dtype=tf.string)    
     dataset = tf.data.Dataset.from_tensor_slices((all_files, all_child_files))
     dataset = dataset.map(load_and_preprocess_image)
     return dataset.batch(batch_size=batch_size), len(all_child_files)
