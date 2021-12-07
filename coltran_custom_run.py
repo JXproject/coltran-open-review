@@ -344,6 +344,11 @@ def main():
 
     ### step 3:
     if COLORTRAN_STEPS.SPATIAL_UPSAMPLER in RUN_STEPS:
+        # [Experiment] skip 2nd stage, build stage 3 directly from 1st stage:
+        # run_model(
+        #     model_step = COLORTRAN_STEPS.SPATIAL_UPSAMPLER,
+        #     prev_gen_data_dir = CONFIG[COLORTRAN_STEPS.COLORIZER]["output_path"]
+        # )
         run_model(
             model_step = COLORTRAN_STEPS.SPATIAL_UPSAMPLER,
             prev_gen_data_dir = CONFIG[COLORTRAN_STEPS.COPLOR_UPSAMPLER]["output_path"]
