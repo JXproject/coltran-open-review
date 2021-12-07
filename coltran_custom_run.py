@@ -1,5 +1,6 @@
 # %% INIT
 import os
+import sys
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -23,9 +24,11 @@ from jx_lib import create_all_folders
 from icecream import ic
 
 # %% USER PARAMS:
-# TAG = "-potato"
 TAG = ""
-# TAG = "-batch"
+if len(sys.argv) > 1:
+    TAG = sys.argv[1]
+    # TAG = "-potato"
+    # TAG = "-batch1"
 
 # %% Definitions:
 from enum import Enum
@@ -70,26 +73,43 @@ CONFIG = {
 }
 
 ### INIT [USER INPUT]:
-RUN_STEPS = [
-    # COLORTRAN_STEPS.INIT,
-    # COLORTRAN_STEPS.COLORIZER,
-    # COLORTRAN_STEPS.COPLOR_UPSAMPLER,
-    COLORTRAN_STEPS.SPATIAL_UPSAMPLER,
-]
+RUN_STEPS = []
+if len(sys.argv) > 2:
+    if "init" in sys.argv:
+        RUN_STEPS.append(COLORTRAN_STEPS.INIT)
+    if "colorizer" in sys.argv:
+        RUN_STEPS.append(COLORTRAN_STEPS.COLORIZER)
+    if "color_upsampler" in sys.argv:
+        RUN_STEPS.append(COLORTRAN_STEPS.COPLOR_UPSAMPLER)
+    if "spatial_upsampler" in sys.argv:
+        RUN_STEPS.append(COLORTRAN_STEPS.SPATIAL_UPSAMPLER)
 
-# grab 5k samples: 100 x 50 = 5k:
+else:
+    RUN_STEPS = [
+        COLORTRAN_STEPS.INIT,
+        COLORTRAN_STEPS.COLORIZER,
+        COLORTRAN_STEPS.COPLOR_UPSAMPLER,
+        COLORTRAN_STEPS.SPATIAL_UPSAMPLER,
+    ]
+
+MASTER_DIRECTORY = None
+
 if "potato" in TAG:
-    MASTER_DIRECTORY = 'coltran/potatoes_images'
-elif "batch" in TAG:
-    MASTER_DIRECTORY = 'coltran/custom-batch'
+    CONFIG[COLORTRAN_STEPS.INIT]["image_directory"] = ['coltran/potatoes_images/imgs']
+elif "batch1" in TAG:
+    CONFIG[COLORTRAN_STEPS.INIT]["image_directory"] = ['coltran/custom-batch/batch1']
+elif "batch2" in TAG:
+    CONFIG[COLORTRAN_STEPS.INIT]["image_directory"] = ['coltran/custom-batch/batch2']
+elif "batch3" in TAG:
+    CONFIG[COLORTRAN_STEPS.INIT]["image_directory"] = ['coltran/custom-batch/batch3']
 else:
     MASTER_DIRECTORY = '/home/jx/tensorflow_datasets/imagenet2012/val/'
-validation_dir = [os.path.join(MASTER_DIRECTORY,dir) for dir in tf.io.gfile.listdir(MASTER_DIRECTORY)]
-CONFIG[COLORTRAN_STEPS.INIT]["image_directory"] = validation_dir[0:100]
+    validation_dir = [os.path.join(MASTER_DIRECTORY,dir) for dir in tf.io.gfile.listdir(MASTER_DIRECTORY)]
+    # grab up-to 5k samples: 100 x 50 = 5k:
+    CONFIG[COLORTRAN_STEPS.INIT]["image_directory"] = validation_dir[0:100]
 
 print("====== Image Directories: \n", CONFIG[COLORTRAN_STEPS.INIT]["image_directory"] , "========== ========== ==========")
 
-# %%
 
 # %% Functions:
 #### DEFINE HELPER FUNCTIONS ####
@@ -207,14 +227,6 @@ def build_model(
     return model, optimizer, ema
 
 # %% MAIN: optimize
-# MAIN:
-dataset = None
-dataset_itr = None
-step = COLORTRAN_STEPS.INIT
-
-store_dir, img_dir = None, None
-
-
 def run_model(
         model_step: COLORTRAN_STEPS,
         prev_gen_data_dir = None
@@ -287,54 +299,60 @@ def run_model(
                 plt.imsave(f, sample)
     
     print("================================ MODEL END @ [{}] ================================".format(model_step))
+def main():
+    # MAIN:
+    dataset = None
+    dataset_itr = None
 
-# color dataset preview save
-if COLORTRAN_STEPS.INIT in RUN_STEPS:
-    dataset_color, num_files = gen_grayscale_dataset_from_images(
-        img_dir     =CONFIG[COLORTRAN_STEPS.INIT]["image_directory"], 
-        batch_size  =CONFIG[COLORTRAN_STEPS.INIT]["batch_size"], 
-        mode        =CONFIG[COLORTRAN_STEPS.INIT]["mode"],
-        convert_to_gray=False,
-    )
-    dataset_color_itr = iter(dataset_color)
-    save_image(dataset_itr=dataset_color_itr, num_files=num_files, model_step=COLORTRAN_STEPS.INIT, color=True)
+    # color dataset preview save
+    if COLORTRAN_STEPS.INIT in RUN_STEPS:
+        dataset_color, num_files = gen_grayscale_dataset_from_images(
+            img_dir     =CONFIG[COLORTRAN_STEPS.INIT]["image_directory"], 
+            batch_size  =CONFIG[COLORTRAN_STEPS.INIT]["batch_size"], 
+            mode        =CONFIG[COLORTRAN_STEPS.INIT]["mode"],
+            convert_to_gray=False,
+        )
+        dataset_color_itr = iter(dataset_color)
+        save_image(dataset_itr=dataset_color_itr, num_files=num_files, model_step=COLORTRAN_STEPS.INIT, color=True)
 
-    # dataset generation
-    dataset, num_files = gen_grayscale_dataset_from_images(
-        img_dir     =CONFIG[COLORTRAN_STEPS.INIT]["image_directory"], 
-        batch_size  =CONFIG[COLORTRAN_STEPS.INIT]["batch_size"], 
-        mode        =CONFIG[COLORTRAN_STEPS.INIT]["mode"]
-    )
-    dataset_itr = iter(dataset)
-    save_image(dataset_itr=dataset_itr, num_files=num_files, model_step=COLORTRAN_STEPS.INIT, color=False)
+        # dataset generation
+        dataset, num_files = gen_grayscale_dataset_from_images(
+            img_dir     =CONFIG[COLORTRAN_STEPS.INIT]["image_directory"], 
+            batch_size  =CONFIG[COLORTRAN_STEPS.INIT]["batch_size"], 
+            mode        =CONFIG[COLORTRAN_STEPS.INIT]["mode"]
+        )
+        dataset_itr = iter(dataset)
+        save_image(dataset_itr=dataset_itr, num_files=num_files, model_step=COLORTRAN_STEPS.INIT, color=False)
 
-tf.keras.backend.clear_session()
-
-### step 1:
-if COLORTRAN_STEPS.COLORIZER in RUN_STEPS:
-    run_model(
-        model_step = COLORTRAN_STEPS.COLORIZER,
-        prev_gen_data_dir = None
-    )
     tf.keras.backend.clear_session()
 
-### step 2:
-if COLORTRAN_STEPS.COPLOR_UPSAMPLER in RUN_STEPS:
-    run_model(
-        model_step = COLORTRAN_STEPS.COPLOR_UPSAMPLER,
-        prev_gen_data_dir = CONFIG[COLORTRAN_STEPS.COLORIZER]["output_path"]
-    )
-    tf.keras.backend.clear_session()
+    ### step 1:
+    if COLORTRAN_STEPS.COLORIZER in RUN_STEPS:
+        run_model(
+            model_step = COLORTRAN_STEPS.COLORIZER,
+            prev_gen_data_dir = None
+        )
+        tf.keras.backend.clear_session()
 
-### step 3:
-if COLORTRAN_STEPS.SPATIAL_UPSAMPLER in RUN_STEPS:
-    run_model(
-        model_step = COLORTRAN_STEPS.SPATIAL_UPSAMPLER,
-        prev_gen_data_dir = CONFIG[COLORTRAN_STEPS.COPLOR_UPSAMPLER]["output_path"]
-    )
-    tf.keras.backend.clear_session()
+    ### step 2:
+    if COLORTRAN_STEPS.COPLOR_UPSAMPLER in RUN_STEPS:
+        run_model(
+            model_step = COLORTRAN_STEPS.COPLOR_UPSAMPLER,
+            prev_gen_data_dir = CONFIG[COLORTRAN_STEPS.COLORIZER]["output_path"]
+        )
+        tf.keras.backend.clear_session()
+
+    ### step 3:
+    if COLORTRAN_STEPS.SPATIAL_UPSAMPLER in RUN_STEPS:
+        run_model(
+            model_step = COLORTRAN_STEPS.SPATIAL_UPSAMPLER,
+            prev_gen_data_dir = CONFIG[COLORTRAN_STEPS.COPLOR_UPSAMPLER]["output_path"]
+        )
+        tf.keras.backend.clear_session()
 
 
 
 
 # %%
+if __name__ == "__main__":
+    main()

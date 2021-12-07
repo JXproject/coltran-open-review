@@ -17,38 +17,35 @@ import jx_lib
 from icecream import ic
 
 # %%
-LUT = {
-    "ColTran-stage1": {
-        "ref": 'coltran/result/imagenet/color_64',
-        "out": 'coltran/result/stage_1',
-        "batch": 100,
-    },
-    "ColTran-stage2": {
-        "ref": 'coltran/result/imagenet/color_64',
-        "out": 'coltran/result/stage_2',
-        "batch": 100,
-    },
-    "ColTran-stage3": {
-        "ref": 'coltran/result/imagenet/color',
-        "out": 'coltran/result/stage_3',
-        "batch": 100,
-    },
-    "batch-stage1": {
-        "ref": 'coltran/result-batch/imagenet/color_64',
-        "out": 'coltran/result-batch/stage_1',
-        "batch": 10,
-    },
-    "batch-stage2": {
-        "ref": 'coltran/result-batch/imagenet/color_64',
-        "out": 'coltran/result-batch/stage_2',
-        "batch": 10,
-    },
-    "batch-stage3": {
-        "ref": 'coltran/result-batch/imagenet/color',
-        "out": 'coltran/result-batch/stage_3',
-        "batch": 10,
-    },
-}
+LUT = {}
+TITLE = []
+def add_to_LUT(batch_name, batch_size, batch_folder, title):
+    TITLE.append(title)
+    LUT.update(
+        {
+            "{}-stage1".format(batch_name): {
+                "ref": 'coltran/{}/imagenet/color_64'.format(batch_folder),
+                "out": 'coltran/{}/stage_1'.format(batch_folder),
+                "batch": batch_size,
+            },
+            "{}-stage2".format(batch_name): {
+                "ref": 'coltran/{}/imagenet/color_64'.format(batch_folder),
+                "out": 'coltran/{}/stage_2'.format(batch_folder),
+                "batch": batch_size,
+            },
+            "{}-stage3".format(batch_name): {
+                "ref": 'coltran/{}/imagenet/color'.format(batch_folder),
+                "out": 'coltran/{}/stage_3'.format(batch_folder),
+                "batch": batch_size,
+            },
+        }
+    )
+
+# [USER-INPUT] Please adjust the definition here:
+add_to_LUT(batch_name="batch1", batch_size=10, batch_folder="result-batch1", title="batch1")
+add_to_LUT(batch_name="batch2", batch_size=10, batch_folder="result-batch2", title="batch2")
+add_to_LUT(batch_name="batch3", batch_size=10, batch_folder="result-batch3", title="batch3")
+add_to_LUT(batch_name="ColTran", batch_size=100, batch_folder="result", title="ImageNet-2021")
 
 
 # %%
@@ -160,6 +157,9 @@ def run_fid_score(TAG, INTERPOLATION, verbose=False):
 
 # %% MAIN: 
 def main():
+    print(" \n ==== BEGIN ==== ")
+    print("Computing FID for: ", TITLE)
+    
     fid_s = {}
     for tag in LUT:
         for interpolation in ["bilinear", "nearest", "gaussian"]:
@@ -169,40 +169,37 @@ def main():
             fid_s[interpolation].append(run_fid_score(TAG=tag, INTERPOLATION=interpolation))
     
     # Plot FID Curve:
-    data_dict = {
-        "ImageNet2012 - bilinear": {
-            "x": [1, 2, 3],
-            "y": fid_s["bilinear"][0:3],
-        },
-        "ImageNet2012 - nearest": {
-            "x": [1, 2, 3],
-            "y": fid_s["nearest"][0:3],
-        },
-        "ImageNet2012 - gaussian": {
-            "x": [1, 2, 3],
-            "y": fid_s["gaussian"][0:3],
-        },
-        "Custom - bilinear": {
-            "x": [1, 2, 3],
-            "y": fid_s["bilinear"][3:6],
-        },
-        "Custom - nearest": {
-            "x": [1, 2, 3],
-            "y": fid_s["nearest"][3:6],
-        },
-        "Custom - gaussian": {
-            "x": [1, 2, 3],
-            "y": fid_s["gaussian"][3:6],
-        },
-    }
+    DATA_DICT = {}
+    def data_dict_update(name):
+        n=len(DATA_DICT)
+        DATA_DICT.update(
+            {
+                "{} - bilinear".format(name): {
+                    "x": [1, 2, 3],
+                    "y": fid_s["bilinear"][n:n+3],
+                },
+                "{} - nearest".format(name): {
+                    "x": [1, 2, 3],
+                    "y": fid_s["nearest"][n:n+3],
+                },
+                "{} - gaussian".format(name): {
+                    "x": [1, 2, 3],
+                    "y": fid_s["gaussian"][n:n+3],
+                },
+            }
+        )
+    for title in TITLE:
+        data_dict_update(title)
+    
     jx_lib.create_folder("output")
-    jx_lib.output_path(
-        data_dict = data_dict,
+    jx_lib.output_plot(
+        data_dict = DATA_DICT,
         Ylabel = "FID Score",
         Xlabel = "ColTran Stage",
-        OUTPUT = "output",
+        OUT_DIR = "output",
         tag = "FID Score At Different Stage",
     )
+    print(" \n ==== END ==== ")
 
 
 if __name__ == "__main__":
