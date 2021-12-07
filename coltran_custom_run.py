@@ -97,11 +97,11 @@ MASTER_DIRECTORY = None
 if "potato" in TAG:
     CONFIG[COLORTRAN_STEPS.INIT]["image_directory"] = ['coltran/potatoes_images/imgs']
 elif "batch1" in TAG:
-    CONFIG[COLORTRAN_STEPS.INIT]["image_directory"] = ['coltran/custom-batch/batch1']
+    CONFIG[COLORTRAN_STEPS.INIT]["image_directory"] = ['coltran/custom-batch/original']
 elif "batch2" in TAG:
-    CONFIG[COLORTRAN_STEPS.INIT]["image_directory"] = ['coltran/custom-batch/batch2']
+    CONFIG[COLORTRAN_STEPS.INIT]["image_directory"] = ['coltran/custom-batch/original']
 elif "batch3" in TAG:
-    CONFIG[COLORTRAN_STEPS.INIT]["image_directory"] = ['coltran/custom-batch/batch3']
+    CONFIG[COLORTRAN_STEPS.INIT]["image_directory"] = ['coltran/custom-batch/original']
 else:
     MASTER_DIRECTORY = '/home/jx/tensorflow_datasets/imagenet2012/val/'
     validation_dir = [os.path.join(MASTER_DIRECTORY,dir) for dir in tf.io.gfile.listdir(MASTER_DIRECTORY)]
