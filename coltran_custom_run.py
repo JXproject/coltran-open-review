@@ -24,8 +24,8 @@ from icecream import ic
 
 # %% USER PARAMS:
 # TAG = "-potato"
-# TAG = ""
-TAG = "-batch"
+TAG = ""
+# TAG = "-batch"
 
 # %% Definitions:
 from enum import Enum
@@ -44,19 +44,25 @@ CONFIG = {
         "output_path": 'coltran/result{}/imagenet'.format(TAG),
     },
     COLORTRAN_STEPS.COLORIZER: {
+        "image_directory": 'coltran/result{}/imagenet/gray'.format(TAG),
         "model_config": CONFIG_COLTRAN_CORE,
         "batch_size": 20,
+        "mode": "colorize",
         "output_path": 'coltran/result{}/stage_1'.format(TAG),
         "pre-built_log_dir": 'coltran/coltran/colorizer',
     },
     COLORTRAN_STEPS.COPLOR_UPSAMPLER: {
+        "image_directory": 'coltran/result{}/imagenet/gray'.format(TAG),
         "model_config": CONFIG_COLOR_UPSAMPLER,
         "batch_size": 5,
+        "mode": "colorize",
         "output_path": 'coltran/result{}/stage_2'.format(TAG),
         "pre-built_log_dir": 'coltran/coltran/color_upsampler',
     },
     COLORTRAN_STEPS.SPATIAL_UPSAMPLER: {
+        "image_directory": 'coltran/result{}/imagenet/gray'.format(TAG),
         "model_config": CONFIG_SPATIAL_UPSAMPLER,
+        "mode": "colorize",
         "batch_size": 5,
         "output_path": 'coltran/result{}/stage_3'.format(TAG),
         "pre-built_log_dir": 'coltran/coltran/spatial_upsampler',
@@ -65,9 +71,9 @@ CONFIG = {
 
 ### INIT [USER INPUT]:
 RUN_STEPS = [
-    COLORTRAN_STEPS.INIT,
-    COLORTRAN_STEPS.COLORIZER,
-    COLORTRAN_STEPS.COPLOR_UPSAMPLER,
+    # COLORTRAN_STEPS.INIT,
+    # COLORTRAN_STEPS.COLORIZER,
+    # COLORTRAN_STEPS.COPLOR_UPSAMPLER,
     COLORTRAN_STEPS.SPATIAL_UPSAMPLER,
 ]
 
@@ -82,6 +88,8 @@ validation_dir = [os.path.join(MASTER_DIRECTORY,dir) for dir in tf.io.gfile.list
 CONFIG[COLORTRAN_STEPS.INIT]["image_directory"] = validation_dir[0:100]
 
 print("====== Image Directories: \n", CONFIG[COLORTRAN_STEPS.INIT]["image_directory"] , "========== ========== ==========")
+
+# %%
 
 # %% Functions:
 #### DEFINE HELPER FUNCTIONS ####
@@ -217,9 +225,9 @@ def run_model(
     
     # - fetch dataset:
     dataset, num_files = gen_grayscale_dataset_from_images(
-        img_dir     =CONFIG[COLORTRAN_STEPS.INIT]["image_directory"], 
+        img_dir     =[CONFIG[model_step]["image_directory"]], 
         batch_size  =batch_size, 
-        mode        =CONFIG[COLORTRAN_STEPS.INIT]["mode"]
+        mode        =CONFIG[model_step]["mode"]
     )
     dataset_itr = iter(dataset)
 
