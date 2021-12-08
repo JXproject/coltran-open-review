@@ -102,6 +102,13 @@ elif "batch2" in TAG:
     CONFIG[COLORTRAN_STEPS.INIT]["image_directory"] = ['coltran/custom-batch/original']
 elif "batch3" in TAG:
     CONFIG[COLORTRAN_STEPS.INIT]["image_directory"] = ['coltran/custom-batch/original']
+elif "train" in TAG:
+    # generate pre-compiled reduced training datasets
+    RUN_STEPS = [COLORTRAN_STEPS.INIT]
+    MASTER_DIRECTORY = '/home/jx/tensorflow_datasets/imagenet2012/train/'
+    validation_dir = [os.path.join(MASTER_DIRECTORY,dir) for dir in tf.io.gfile.listdir(MASTER_DIRECTORY)]
+    # grab up-to 5k samples: 1 x 1300 = 1300:
+    CONFIG[COLORTRAN_STEPS.INIT]["image_directory"] = validation_dir[0:1]
 else:
     MASTER_DIRECTORY = '/home/jx/tensorflow_datasets/imagenet2012/val/'
     validation_dir = [os.path.join(MASTER_DIRECTORY,dir) for dir in tf.io.gfile.listdir(MASTER_DIRECTORY)]
