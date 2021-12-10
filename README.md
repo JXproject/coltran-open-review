@@ -52,7 +52,7 @@ SYDE 671 Course Project to replicate and validate paper
    - You may invoke: `$ python coltran_evaluate_fid.py`
    - Or save the output to a file: `python coltran_evaluate_fid.py > output.txt`, similar to [example-output-of-FID-scores](coltran/batch123.txt)
 3. See the plot under `output`, similar to 
-   ![example-of-the-FID-plot](output/plot_FID Score At Different Stage.png)
+   ![example-of-the-FID-plot](output/plot_FID%20Score%20At%20Different%20Stage.png)
 ### 2.3 Training and Ablation Training with Validation:
 1. Be sure to pre-generate the training images via 2.1, pre-compile with: `$ python coltran_custom_run.py -train`
 2. Modify the directory in CONFIG dictionary in the `coltran_custom_train.py`
