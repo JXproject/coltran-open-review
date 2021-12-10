@@ -1,7 +1,7 @@
 # Reproducibility Challenge
 
 ## 1. Brief:
-SYDE 671 Course Project to replicate and validate paper for [2021 Reproducibility Challenge](https://paperswithcode.com/rc2021)
+SYDE 671 Course Project and [2021 Reproducibility Challenge](https://paperswithcode.com/rc2021) to replicate and validate paper for [ICLR 2021 - Colorization Transformer](https://openreview.net/forum?id=5NA1PinlGFu).
 ### 1.1 Reference:
 - Paper: [ICLR 2021 - Colorization Transformer](https://openreview.net/forum?id=5NA1PinlGFu)
 - Original Author GitHub: https://github.com/google-research/google-research/tree/master/coltran
