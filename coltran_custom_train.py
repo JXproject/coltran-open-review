@@ -47,6 +47,9 @@ SAVING_RATE = 1
 if "-10K" in TAG:
     MAX_TRAIN = 10000
     STEP_SIZE = 100
+if "-20K" in TAG:
+    MAX_TRAIN = 20000
+    STEP_SIZE = 100
 if "-1K" in TAG:
     MAX_TRAIN = 1000
     STEP_SIZE = 10

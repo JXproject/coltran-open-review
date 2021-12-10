@@ -62,5 +62,8 @@ SYDE 671 Course Project to replicate and validate paper
    - `{TAG}` = `train-ablation-10K`: run ablation training only on Coltran Core (Stage 1 - Coloriztion) for 10,000 steps, with all combinations, includes: baseline axial transformer, no cLN, no cMLP, no cAtt
    - `{TAG}` = `train-ablation-10K-eval`: run evaluation through all the checkpoints for the training trained previously only with Coltran Core (Stage 1 - Coloriztion)
    - `{TAG}` = `train-ablation-10K-validate`: `train-ablation-10K` + validate the model at once per defined periods to evaluate the trained model at that particular step
-
+4. Note: To continuing previously trained models, please modify the folder name and `MAX_TRAIN` in the script:
+   - Modify both `{TAG}` and folder name to `train-ablation-20K` instead of `train-ablation-10K`
+   - `MAX_TRAIN = 20000` in `coltran_custom_train.py`
+   - The pipeline will automatically pick up the latest model in the log directory, and continuing training as long as you set `MAX_TRAIN` to a greater value
 
