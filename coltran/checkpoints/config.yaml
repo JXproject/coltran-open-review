@@ -1,0 +1,36 @@
+batch_size: 24
+dataset: imagenet
+downsample: true
+downsample_res: 64
+eval_batch_size: 16
+eval_checkpoint_wait_secs: -1
+eval_num_examples: 20000
+max_train_steps: 300000
+model:
+  ff_size: 512
+  hidden_size: 512
+  name: color_upsampler
+  num_encoder_layers: 4
+  num_heads: 4
+  resolution:
+  - 64
+  - 64
+num_epochs: -1
+optimizer:
+  learning_rate: 0.0003
+  type: rmsprop
+polyak_decay: 0.999
+random_channel: true
+resolution:
+- 256
+- 256
+sample:
+  batch_size: 1
+  gen_data_dir: ''
+  gen_file: gen0
+  log_dir: samples_sweep
+  mode: argmax
+  num_outputs: 1
+  num_samples: 1
+  skip_batches: 0
+save_checkpoint_secs: 900
