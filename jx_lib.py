@@ -4,6 +4,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.patches import Ellipse
 import seaborn as sns
+import pandas as pd
+from scipy.signal import savgol_filter
 
 from typing import Dict, Any, List
 
@@ -246,22 +248,39 @@ def progress_plot(
 
     return fig
 
+
 def output_plot(
     data_dict,
     Ylabel  = "",
     Xlabel  = "",
     figsize = (12,6),
     OUT_DIR = "",
-    tag     = ""
+    tag     = "",
+    smooth  = None 
 ):
     fig = plt.figure(figsize=figsize)
     for name_, data_ in data_dict.items():
-        plt.plot(data_["x"], data_["y"], label=name_) 
+        x,y = data_["x"], data_["y"]
+        if smooth == "ewm":
+            df = pd.DataFrame(data_)
+            df['smooth'] = df['y'].ewm(span=int(len(y) * 0.9), adjust=False).mean()
+            y = df['smooth'].values.tolist()
+        elif smooth == "ewm-more":
+            df = pd.DataFrame(data_)
+            df['smooth'] = df['y'].ewm(span=int(len(y) * 0.8), adjust=False).mean()
+            y = df['smooth'].values.tolist()
+        elif smooth == "savgol_filter":
+            y = savgol_filter(y, 11, 3) #odd number
+        plt.plot(x,y,label=name_) 
     plt.ylabel(Ylabel)
     plt.xlabel(Xlabel)
     plt.legend()
-    plt.title("Plot [{}]".format(tag))
-    fig.savefig("{}/plot_{}.png".format(OUT_DIR, tag), bbox_inches = 'tight')
+    if smooth:
+        plt.title("Plot [{} + {} smooth]".format(tag, smooth))
+        fig.savefig("{}/plot_smooth_{}_{}.png".format(OUT_DIR, tag, smooth), bbox_inches = 'tight')
+    else:
+        plt.title("Plot [{}]".format(tag))
+        fig.savefig("{}/plot_{}.png".format(OUT_DIR, tag), bbox_inches = 'tight')
     plt.close(fig)
     return fig
 
