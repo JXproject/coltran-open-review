@@ -67,3 +67,6 @@ SYDE 671 Course Project and [2021 Reproducibility Challenge](https://paperswithc
    - `MAX_TRAIN = 20000` in `coltran_custom_train.py`
    - The pipeline will automatically pick up the latest model in the log directory, and continuing training as long as you set `MAX_TRAIN` to a greater value
 
+## 3. Results:
+![sample](fig/test.png)
+![sample](fig/test2.png)
